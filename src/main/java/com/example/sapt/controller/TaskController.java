@@ -16,6 +16,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    //operatii CRUD
     @GetMapping
     public List<TaskDTO> getTasks() {
         return taskService.getTasks();
@@ -26,18 +27,17 @@ public class TaskController {
         return taskService.addTask(taskDTO);
     }
 
-    @PostMapping("/more")
-    public void createTasks(@RequestBody List<TaskDTO> taskDTOs) {
-        for (TaskDTO taskDTO : taskDTOs) {
-            taskService.addTask(taskDTO);
-        }
-    }
-
     @PutMapping("/{id}")
     public void updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
         taskService.update(id, taskDTO);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+    }
+
+    //alte operatii
     @PutMapping("/upsert/{id}")
     public void upsertTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
         taskService.upsert(id, taskDTO);
@@ -48,11 +48,6 @@ public class TaskController {
         return taskService.getTaskById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
-    }
-
     @GetMapping("/statuses")
     public List<TaskDTO> getTasksByStatus(@RequestParam String status) {
         return taskService.getStatusTasks(status);
@@ -61,6 +56,13 @@ public class TaskController {
     @PutMapping("/update-by-obj")
     public List<TaskDTO> updateTaskByObject(@RequestBody UpdateRequest updateRequest) {
         return taskService.updateTaskByObject(updateRequest.status(), updateRequest.content());
+    }
+
+    @PostMapping("/more")
+    public void createTasks(@RequestBody List<TaskDTO> taskDTOs) {
+        for (TaskDTO taskDTO : taskDTOs) {
+            taskService.addTask(taskDTO);
+        }
     }
 }
 

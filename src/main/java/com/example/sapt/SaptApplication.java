@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 ///
 /// validari ca field-uri sa nu fie nule --> spring boot
-/// validari id unic
 /// 4 endpoints la alegere
 ///
 
