@@ -1,4 +1,6 @@
 package com.example.sapt.dto;
 
-public record UpdateRequest ( String content, String status) {
+import jakarta.validation.constraints.NotBlank;
+
+public record UpdateRequest (@NotBlank  String content, @NotBlank String status) {
 }

@@ -3,7 +3,6 @@ package com.example.sapt.services;
 import com.example.sapt.dto.TaskDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.util.Converter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,14 +60,14 @@ public class TaskService {
                 break;
             }
         }
-        if(exists == false){
+        if(!exists){
             tasks.add(taskDTO);
         }
     }
 
     public TaskDTO getTaskById(Long id){
         for( var i : tasks){
-            if(i.getId() == id){
+            if(Objects.equals(i.getId(), id)){
                 return i;
             }
         }
