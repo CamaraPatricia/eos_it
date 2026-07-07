@@ -86,7 +86,7 @@ public class TaskService {
     public List<TaskDTO> getStatusTasks(String status){
         List<TaskDTO> filtered = new ArrayList<>();
         for(var i : tasks){
-            if(i.getStatus().equals(status)){
+            if(i.getStatus().equalsIgnoreCase(status)){
                 filtered.add(i);
             }
         }

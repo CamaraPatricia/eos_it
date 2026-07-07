@@ -3,6 +3,9 @@ package com.example.sapt.controller;
 import com.example.sapt.dto.TaskDTO;
 import com.example.sapt.dto.UpdateRequest;
 import com.example.sapt.services.TaskService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +26,12 @@ public class TaskController {
     }
 
     @PostMapping
-    public List<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
+    public List<TaskDTO> createTask(@RequestBody @Valid TaskDTO taskDTO) {
         return taskService.addTask(taskDTO);
     }
 
     @PutMapping("/{id}")
-    public void updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
+    public void updateTask(@PathVariable Long id, @RequestBody @Valid TaskDTO taskDTO){
         taskService.update(id, taskDTO);
     }
 
@@ -39,17 +42,17 @@ public class TaskController {
 
     //alte operatii
     @PutMapping("/upsert/{id}")
-    public void upsertTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
+    public void upsertTask(@PathVariable @NotNull Long id, @RequestBody @Valid TaskDTO taskDTO){
         taskService.upsert(id, taskDTO);
     }
 
     @GetMapping("/{id}")
-    public TaskDTO getTaskById(@PathVariable Long id){
+    public TaskDTO getTaskById(@PathVariable @NotNull Long id){
         return taskService.getTaskById(id);
     }
 
     @GetMapping("/statuses")
-    public List<TaskDTO> getTasksByStatus(@RequestParam String status) {
+    public List<TaskDTO> getTasksByStatus(@RequestParam @NotBlank String status) {
         return taskService.getStatusTasks(status);
     }
 
@@ -59,7 +62,7 @@ public class TaskController {
     }
 
     @PostMapping("/more")
-    public void createTasks(@RequestBody List<TaskDTO> taskDTOs) {
+    public void createTasks(@RequestBody @NotNull List<TaskDTO> taskDTOs) {
         for (TaskDTO taskDTO : taskDTOs) {
             taskService.addTask(taskDTO);
         }
