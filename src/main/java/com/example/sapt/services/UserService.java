@@ -57,4 +57,15 @@ public class UserService {
         userRepository.deleteById(id);
         log.info("Sucssessfully deleted!");
     }
+
+    public UserDTO createUser(UserDTO userDTO) {
+        log.info("Creating user: {}", userDTO);
+        User user = userMapper.toEntity(userDTO);
+        user.setCreationDate(LocalDateTime.now());
+        user.setLastUpdateDate(LocalDateTime.now());
+        user.setUsername(userDTO.username());
+        user.setBirthDate(userDTO.birthDate());
+        user.setInternal(userDTO.isInternal());
+        return userMapper.toDTO(userRepository.save(user));
+    }
 }

@@ -64,25 +64,14 @@ public class TaskController {
         return taskService.deleteTasksForUser(userId);
     }
 
-    //alte operatii
-    @PutMapping("/upsert/{id}")
-    public void upsertTask(@PathVariable @NotNull Long id, @RequestBody @Valid TaskDTO taskDTO){
-        taskService.upsert(id, taskDTO);
-    }
-
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable @NotNull Long id){
         return taskService.getTaskById(id);
     }
 
-    @GetMapping("/statuses")
+    @GetMapping("/by-status")
     public List<TaskDTO> getTasksByStatus(@RequestParam @NotBlank String status) {
         return taskService.getStatusTasks(status);
-    }
-
-    @PutMapping("/update-by-obj")
-    public List<TaskDTO> updateTaskByObject(@RequestBody UpdateRequest updateRequest) {
-        return taskService.updateTaskByObject(updateRequest.status(), updateRequest.content());
     }
 
     @PostMapping("/more")
@@ -91,5 +80,16 @@ public class TaskController {
             taskService.addTask(taskDTO);
         }
     }
+
+//    alte operatii
+//    @PutMapping("/upsert/{id}")
+//    public void upsertTask(@PathVariable @NotNull Long id, @RequestBody @Valid TaskDTO taskDTO){
+//        taskService.upsert(id, taskDTO);
+//    }
+//
+//    @PutMapping("/update-by-obj")
+//    public List<TaskDTO> updateTaskByObject(@RequestBody UpdateRequest updateRequest) {
+//        return taskService.updateTaskByObject(updateRequest.status(), updateRequest.content());
+//    }
 }
 

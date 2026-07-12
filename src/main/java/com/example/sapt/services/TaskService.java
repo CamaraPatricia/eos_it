@@ -138,24 +138,14 @@ public class TaskService {
     }
 
     public TaskDTO getTaskById(Long id){
-        for( var i : tasks){
-            if(Objects.equals(i.getId(), id)){
-                return i;
-            }
-        }
-        return null;
+        return taskMapper.toDTO(taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id)));
     }
 
 
 
     public List<TaskDTO> getStatusTasks(String status){
-        List<TaskDTO> filtered = new ArrayList<>();
-        for(var i : tasks){
-            if(i.getStatus().equalsIgnoreCase(status)){
-                filtered.add(i);
-            }
-        }
-        return filtered;
+        return taskRepository.findByStatusName(status).stream().map(taskMapper::toDTO).toList();
     }
 
     public List<TaskDTO> updateTaskByObject(String status, String content){

@@ -22,7 +22,12 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/{id}")
+    @PostMapping
+    public UserDTO createUser(@RequestBody UserDTO userDTO) {
+        return userService.createUser(userDTO);
+    }
+
+    @PutMapping("/{id}")
     public UserDTO updateUser(@PathVariable long id, @RequestBody UserUpdateRequest updateRequest) {
         return userService.updateUser(id, updateRequest);
     }

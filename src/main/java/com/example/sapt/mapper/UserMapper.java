@@ -17,7 +17,7 @@ public class UserMapper {
                 .build();
     }
 
-    User toEntity(UserDTO userDTO){
+    public User toEntity(UserDTO userDTO){
         return User.builder()
                 .username(userDTO.username())
                 .birthDate(userDTO.birthDate())

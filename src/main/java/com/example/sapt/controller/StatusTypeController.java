@@ -3,7 +3,6 @@ package com.example.sapt.controller;
 import com.example.sapt.dto.StatusTypeDTO;
 import com.example.sapt.services.StatusTypeService;
 import jakarta.validation.Valid;
-import jdk.jshell.Snippet;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
