@@ -12,8 +12,11 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class TaskDTO {
-    @NotNull private Long id;
+    private Long id;
     @NotBlank private String content;
     @NotNull private LocalDateTime dueDate;
     @NotBlank private String status;
+    private Long userId;
+    private LocalDateTime lastUpdateDate;
+    private String lastUpdatedBy;
 }

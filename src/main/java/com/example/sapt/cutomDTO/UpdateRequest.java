@@ -1,4 +1,4 @@
-package com.example.sapt.dto;
+package com.example.sapt.cutomDTO;
 
 import jakarta.validation.constraints.NotBlank;
 
