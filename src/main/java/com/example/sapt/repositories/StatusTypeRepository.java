@@ -19,4 +19,6 @@ public interface StatusTypeRepository extends JpaRepository<StatusType, String> 
         WHERE s.createdBy = :createdBy
     """)
     int deleteByCreatedBy(@Param("createdBy") String createdBy);
+
+    StatusType findByStatusName(String statusName);
 }

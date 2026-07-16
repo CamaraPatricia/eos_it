@@ -4,14 +4,16 @@ import com.example.sapt.cutomDTO.UpdateRequest;
 import com.example.sapt.cutomDTO.UserUpdateRequest;
 import com.example.sapt.dto.UserDTO;
 import com.example.sapt.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;

@@ -1,11 +1,14 @@
 package com.example.sapt.services;
 
-import com.example.sapt.cutomDTO.TaskAssignUpdate;
-import com.example.sapt.cutomDTO.TaskNameUpdate;
-import com.example.sapt.dto.TaskDTO;
+import com.example.sapt.cutomDTO.TaskAssignationUpdateRequestDTO;
+import com.example.sapt.cutomDTO.TaskNameUpdateReqDTO;
+import com.example.sapt.dto.CreateTaskRequestDTO;
+import com.example.sapt.dto.TaskResponseDTO;
 import com.example.sapt.entities.Task;
 import com.example.sapt.mapper.TaskMapper;
+import com.example.sapt.repositories.StatusTypeRepository;
 import com.example.sapt.repositories.TaskRepository;
+import com.example.sapt.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,16 +38,20 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class TaskService {
-    private List<TaskDTO> tasks = new ArrayList<>();
+    private List<TaskResponseDTO> tasks = new ArrayList<>();
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final StatusTypeRepository statusTypeRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, StatusTypeRepository statusTypeRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
+        this.statusTypeRepository = statusTypeRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<TaskDTO> getTasks(){
+    public List<TaskResponseDTO> getTasks(){
         log.info("Getting tasks:");
         tasks = taskRepository.findAll()
                 .stream()
@@ -55,15 +61,19 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO addTask(TaskDTO taskDTO) {
-        taskRepository.save(taskMapper.toEntity(taskDTO));
-        log.info("Added Task: {} " , taskDTO);
-        return taskDTO;
+    public TaskResponseDTO addTask(CreateTaskRequestDTO taskRequestDTO) {
+        taskRepository.save(taskMapper.toEntity(taskRequestDTO));
+        log.info("Added Task: {} " , taskRequestDTO);
+        return taskMapper.toDTO(taskRepository.findByName(taskRequestDTO.taskName()));
+    }
+
+    public List<TaskResponseDTO> getTasksByUserId(Long userId){
+        return taskRepository.findByUser_UserId(userId).stream().map(taskMapper::toDTO).toList();
     }
 
     //update statusId sau userId pentru taskId
     @Transactional
-    public void update(Long id, TaskAssignUpdate taskAssign){
+    public void update(Long id, TaskAssignationUpdateRequestDTO taskAssign){
         Optional<Task> taskEntity = taskRepository.findById(id); //am cautat dupa id doar ca sa vedem daca exista
 
         if(taskEntity.isPresent()){
@@ -71,11 +81,13 @@ public class TaskService {
             boolean modified = false;
 
             if(taskAssign.statusId() != null) {
-                task.setStatusTypeId(taskAssign.statusId());
+                task.setStatusType((statusTypeRepository.findById(taskAssign.statusId()))
+                        .orElseThrow(() -> new RuntimeException("StatusType not found with id: " + taskAssign.statusId())));
                 modified = true;
             }
             if(taskAssign.userId() != null) {
-                task.setUserId(taskAssign.userId());
+                task.setUser((userRepository.findById(taskAssign.userId()))
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + taskAssign.userId())));
                 modified = true;
             }
 
@@ -89,7 +101,39 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO updateTaskName(Long id, TaskNameUpdate taskName){
+    public void update(Long id,CreateTaskRequestDTO req){
+        Optional<Task> optTask = taskRepository.findById(id); //am cautat dupa id doar ca sa vedem daca exista
+
+        if(optTask.isEmpty()){
+            log.info("Task with id {} not found", id);
+            throw new RuntimeException("Task not found with id: " + id);
+        }
+        Task task = optTask.get();
+            boolean modified = false;
+
+            if(req.taskName() != null) {
+                task.setName(req.taskName());
+                modified = true;
+            }
+            if(req.userId() != null) {
+                task.setUser((userRepository.findById(req.userId()))
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + req.userId())));
+                modified = true;
+            }
+            if(req.dueDate() != null) {
+                task.setDueDate(req.dueDate());
+                modified = true;
+            }
+
+            if(modified) {
+                task.setLastUpdateDate(LocalDateTime.now());
+                log.info("Task with id found. Updated task: {}", task.getTaskId());
+            }
+    }
+
+
+    @Transactional
+    public TaskResponseDTO updateTaskName(Long id, TaskNameUpdateReqDTO taskName){
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
         task.setName(taskName.taskName());
         task.setLastUpdateDate(LocalDateTime.now());
@@ -98,7 +142,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO updateDueDate(Long id, LocalDateTime dueDate){
+    public TaskResponseDTO updateDueDate(Long id, LocalDateTime dueDate){
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
         task.setDueDate(dueDate);
         task.setLastUpdateDate(LocalDateTime.now());
@@ -118,41 +162,41 @@ public class TaskService {
 
     @Transactional
     public int deleteTasksForUser(Long userId){
-        return taskRepository.deleteAllByUserId(userId);
+        return taskRepository.deleteAllByUser_UserId(userId);
     }
 
-    public void upsert(Long id, TaskDTO taskDTO){
-        boolean exists = false;
-        for(var i : tasks){
-            if(i.getId().equals(id)){
-                i.setContent(taskDTO.getContent());
-                i.setStatus(taskDTO.getStatus());
-                i.setDueDate(taskDTO.getDueDate());
-                exists = true;
-                break;
-            }
-        }
-        if(!exists){
-            tasks.add(taskDTO);
-        }
-    }
+//    public void upsert(Long id, TaskDTO taskDTO){
+//        boolean exists = false;
+//        for(var i : tasks){
+//            if(i.getId().equals(id)){
+//                i.setContent(taskDTO.getContent());
+//                i.setStatus(taskDTO.getStatus());
+//                i.setDueDate(taskDTO.getDueDate());
+//                exists = true;
+//                break;
+//            }
+//        }
+//        if(!exists){
+//            tasks.add(taskDTO);
+//        }
+//    }
 
-    public TaskDTO getTaskById(Long id){
+    public TaskResponseDTO getTaskById(Long id){
         return taskMapper.toDTO(taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found with id: " + id)));
     }
 
 
 
-    public List<TaskDTO> getStatusTasks(String status){
+    public List<TaskResponseDTO> getStatusTasks(String status){
         return taskRepository.findByStatusName(status).stream().map(taskMapper::toDTO).toList();
     }
 
-    public List<TaskDTO> updateTaskByObject(String status, String content){
-        for(var i : tasks){
-            i.setStatus(status);
-            i.setContent(content);
-        }
-        return tasks;
-    }
+//    public List<TaskDTO> updateTaskByObject(String status, String content){
+//        for(var i : tasks){
+//            i.setStatus(status);
+//            i.setContent(content);
+//        }
+//        return tasks;
+//    }
 }
