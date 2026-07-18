@@ -48,6 +48,11 @@ public class TaskController {
         return taskService.getTasksByUserId(userId);
     }
 
+    @GetMapping("/by-status")
+    public List<TaskResponseDTO> getTasksByStatus(@RequestParam @NotBlank String status) {
+        return taskService.getStatusTasks(status);
+    }
+
     @PostMapping
     public TaskResponseDTO createTask(@RequestBody CreateTaskRequestDTO taskResponseDTO) {
         return taskService.addTask(taskResponseDTO);
@@ -87,11 +92,6 @@ public class TaskController {
     @DeleteMapping("/delete-for-user/{userId}")
     public int deleteTasksForUser(@PathVariable Long userId){
         return taskService.deleteTasksForUser(userId);
-    }
-
-    @GetMapping("/by-status")
-    public List<TaskResponseDTO> getTasksByStatus(@RequestParam @NotBlank String status) {
-        return taskService.getStatusTasks(status);
     }
 
     @PostMapping("/more")

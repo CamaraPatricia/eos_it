@@ -1,6 +1,7 @@
 package com.example.sapt.mapper;
 
 import com.example.sapt.dto.UserDTO;
+import com.example.sapt.dto.UserReqDTO;
 import com.example.sapt.entities.User;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,15 @@ public class UserMapper {
                 .isInternal(userDTO.isInternal())
                 .creationDate(userDTO.creationDate())
                 .lastUpdateDate(userDTO.lastUpdateDate())
+                .build();
+    }
+
+    public User toEntity(UserReqDTO userDTO){
+        return User.builder()
+                .username(userDTO.username())
+                .birthDate(userDTO.birthDate())
+                .email(userDTO.email())
+                .password(userDTO.password())
                 .build();
     }
 }

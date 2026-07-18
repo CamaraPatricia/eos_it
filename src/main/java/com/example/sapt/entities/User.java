@@ -31,6 +31,12 @@ public class User {
     @Convert(converter = NumericBooleanConverter.class) // trebuie sa fac conversie automat, altfel nu vrea :,)
     boolean isInternal;
 
+    @Column(name = "password", nullable = false)
+    String password;
+
+    @Column(name = "email", nullable = false)
+    String email;
+
     @Column(name = "creation_date", nullable = false)
     private LocalDateTime creationDate;
 
