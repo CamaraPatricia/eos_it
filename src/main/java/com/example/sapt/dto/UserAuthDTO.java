@@ -1,7 +1,11 @@
 package com.example.sapt.dto;
 
-public record UserAuthDTO (
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
+@Builder
+public record UserAuthDTO  (
         String email,
         String password
-) {
+){
 }

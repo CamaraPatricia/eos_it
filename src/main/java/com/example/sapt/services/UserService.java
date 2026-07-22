@@ -97,16 +97,16 @@ public class UserService {
         log.info("Creating user: {}", userDTO);
         User user = userMapper.toEntity(userDTO);
 
-        user.setCreationDate(LocalDateTime.now());
-        user.setCreatedBy("USER");
-        user.setLastUpdatedBy("USER");
-        user.setLastUpdateDate(LocalDateTime.now());
-
-        user.setUsername(userDTO.username());
-        user.setBirthDate(userDTO.birthDate());
-        user.setInternal(false);
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
+//        user.setCreationDate(LocalDateTime.now());
+//        user.setCreatedBy("USER");
+//        user.setLastUpdatedBy("USER");
+//        user.setLastUpdateDate(LocalDateTime.now());
+//
+//        user.setUsername(userDTO.username());
+//        user.setBirthDate(userDTO.birthDate());
+//        user.setInternal(false);
+//        user.setEmail(userDTO.email());
+//        user.setPassword(userDTO.password());
 
         return userMapper.toDTO(userRepository.save(user));
     }

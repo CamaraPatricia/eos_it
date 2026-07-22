@@ -5,6 +5,8 @@ import com.example.sapt.dto.UserReqDTO;
 import com.example.sapt.entities.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class UserMapper {
     public UserDTO toDTO(User user){
@@ -34,6 +36,11 @@ public class UserMapper {
                 .birthDate(userDTO.birthDate())
                 .email(userDTO.email())
                 .password(userDTO.password())
+                .createdByFullname(userDTO.username())
+                .createdBy("USER")
+                .creationDate(LocalDateTime.now())
+                .lastUpdatedBy("USER")
+                .lastUpdateDate(LocalDateTime.now())
                 .build();
     }
 }
